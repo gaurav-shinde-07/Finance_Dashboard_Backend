@@ -3,7 +3,7 @@
 A production-grade, role-based financial data management REST API built with Node.js, Express, and Supabase.
 
 ## Live Demo
-- **API Base URL:** 'prod ke baad update krdunga'
+- **API Base URL:** `https://your-app.vercel.app` *(update after deploy)*
 - **Swagger Docs:** `https://your-app.vercel.app/api-docs`
 
 ---
