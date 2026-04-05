@@ -22,7 +22,8 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
-import swaggerUi from 'swagger-ui-express';
+// swagger-ui-express no longer needed — we serve UI via CDN now
+// import swaggerUi from 'swagger-ui-express';
 
 import { swaggerSpec } from '../src/config/swagger.js';
 import { apiLimiter } from '../src/middleware/rateLimiter.js';
@@ -68,12 +69,43 @@ app.use(express.urlencoded({ extended: true }));
 
 // ── API Documentation ─────────────────────────────────────
 // Available at /api-docs — no auth required
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-  customSiteTitle: 'Finance Dashboard API Docs',
-  swaggerOptions: {
-    persistAuthorization: true, // Keep token filled in between page refreshes
-  },
-}));
+// Serve the raw OpenAPI JSON spec — Swagger UI will fetch this
+app.get('/api-docs/spec.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.json(swaggerSpec);
+});
+
+// Serve Swagger UI using CDN assets — avoids Vercel static file MIME issues
+app.get('/api-docs', (req, res) => {
+  res.setHeader('Content-Type', 'text/html');
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Finance Dashboard API Docs</title>
+      <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css" />
+    </head>
+    <body>
+      <div id="swagger-ui"></div>
+      <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js"></script>
+      <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-standalone-preset.js"></script>
+      <script>
+        window.onload = function () {
+          SwaggerUIBundle({
+            url: '/api-docs/spec.json',
+            dom_id: '#swagger-ui',
+            presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+            layout: 'StandaloneLayout',
+            persistAuthorization: true,
+          });
+        };
+      </script>
+    </body>
+    </html>
+  `);
+});
 
 // ── Health Check ──────────────────────────────────────────
 // Simple endpoint for Vercel and uptime monitoring to ping
