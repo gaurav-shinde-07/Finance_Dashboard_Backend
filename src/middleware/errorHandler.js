@@ -13,7 +13,7 @@
 
 export const globalErrorHandler = (err, req, res, next) => {
   // Log the full error server-side for debugging
-  console.error('💥 Unhandled Error:', {
+  console.error(' Unhandled Error:', {
     message: err.message,
     stack: process.env.NODE_ENV === 'development' ? err.stack : '[hidden in production]',
     url: req.url,
