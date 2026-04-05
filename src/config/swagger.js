@@ -38,7 +38,7 @@ Authorization: Bearer <your-supabase-jwt-token>
     servers: [
       {
         url: process.env.NODE_ENV === 'production'
-          ? 'https://finance-dashboard-backend-topaz.vercel.app/'   // Replace with your actual Vercel URL after deploy
+          ? 'https://finance-dashboard-backend-ivory.vercel.app'   // Replace with your actual Vercel URL after deploy
           : `http://localhost:${process.env.PORT || 3000}`,
         description: process.env.NODE_ENV === 'production' ? 'Production' : 'Development',
       },
